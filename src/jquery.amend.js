@@ -38,7 +38,7 @@
 
   defaultOpts = {
     'create': null,
-    'delete': null,
+    'delete': null, // TODO
     't': function(text) { return text; },
     'attrname': 'data-reference',
     'index': null
@@ -68,7 +68,7 @@
       $.extend(defaultOpts, options);
       this.api = {
         'create': defaultOpts['create'],
-        'delete': defaultOpts['delete']
+        'delete': defaultOpts['delete'] // TODO
       };
       this.t = defaultOpts['t'];
       this.attrname = defaultOpts['attrname'];
@@ -80,6 +80,11 @@
         'rejected': this.t('Amendment rejected')
       };
       this.dmp = new diff_match_patch();
+      
+      // Optional index (before manipulating DOM)
+      if (!this.isEmpty(defaultOpts['index'])) {
+        this.renderIndex(defaultOpts['index']);
+      }
       
       // Preprocess data
       var data = {};
@@ -95,11 +100,6 @@
       // Start amendments system
       this.initHtml(data);
       this.initEvents();
-      
-      // Optional index
-      if (!this.isEmpty(defaultOpts['index'])) {
-        this.renderIndex(defaultOpts['index']);
-      }
     }
 
     /**
@@ -131,7 +131,7 @@
       }
       
       var $node = $(node),
-          original = $node.html(),
+          original = $node.text(),
           $container = $node.next(),
           $counter = $('.show-amendments', $container),
           $div = $('.amendments', $container),
@@ -175,7 +175,9 @@
           'class': 'amendment'
         }).append($('<li>', {
           'class': 'amendment-text',
-          'html': this.renderTextDiff(original, list[i]['amendment'])
+          'html': list[i]['extra'] ? 
+                  '<span class="plus">[+]</span> ' + list[i]['amendment'] 
+                  : this.renderTextDiff(original, list[i]['amendment'])
         }));
         
         if (!this.isEmpty(list[i]['reason'])) {
@@ -211,28 +213,57 @@
     AmendManager.prototype.initEvents = function() {
       var self = this;
       
-      // Add amendment
-      $('*[' + this.attrname + ']', this.target).click(function() {
-        self.renderUpdateForm(this, true);
+      $('*[' + this.attrname + ']', this.target).each(function() {
+        
+        var node = this,
+            original = node.innerHTML;
+        
+        // Add new text
+        if ($(node).is(':header')) {
+          $(node)
+            .empty()
+            .append($('<span>', {
+              'class': 'original-text',
+              'html': original
+            }))
+            .append($('<a>', {
+              'href': '#',
+              'class': 'add-new-text',
+              'html': '+'
+            }).click(function(event) {
+              self.renderForm(node, true);
+              // Avoid follow
+              event.preventDefault();
+              return false;
+            }));
+        } else {
+          $(node).addClass('original-text');
+        }
+        
+        // Add amendment
+        $(node).click(function(event) {
+            self.renderForm(node, false);
+            // Avoid follow
+            event.preventDefault();
+            return false;
+        });
       });
     };
     
     /**
-     * Modify an existing text
+     * Modify an existing text or create a new one
      */
-    AmendManager.prototype.renderUpdateForm = function(node) {
+    AmendManager.prototype.renderForm = function(node, extra) {
       // Get previous data
       var $node = $(node),
-          original = $node.html();
-          
+          original = this.getOriginalText(node);
+      
       // Build new form
       var $amendForm = $('<form>', {
         'action': '#',
         'class': 'add-amendment-form'
       }).append($('<textarea>', {
         'name': 'amendment',
-        'html': original,
-        'style': 'height:' + ($node.height()+10) + 'px',
         'class': 'amendment-textarea'
       })).append($('<input>', {
         'name': 'submit',
@@ -244,23 +275,31 @@
         'value': this.t('Cancel'),
         'type': 'button',
         'class': 'amendment-cancel'
-      })).append($('<input>', {
-        'name': 'delete',
-        'value': this.t('Delete text'),
-        'type': 'button',
-        'class': 'amendment-delete'
       }));
  
       // Render new form
-      $node.hide().after($amendForm);
-      $('textarea', $amendForm).focus();
+      if (!extra) {
+        $node.hide();
+        $('textarea', $amendForm)
+          .html(original)
+          .css('height', ($node.height()+20) + 'px')
+          .focus();
+        $amendForm.append($('<input>', {
+          'name': 'delete',
+          'value': this.t('Delete text'),
+          'type': 'button',
+          'class': 'amendment-delete'
+        }));
+      }
+      
+      $node.after($amendForm);
 
       // Add form events
       var self = this;
       
       var submit = function(event) {
         // Build confirmation form
-        self.renderConfirmationForm(node, $amendForm);
+        self.renderConfirmationForm(node, extra, $amendForm);
         // Avoid submit
         event.preventDefault();
         return false;
@@ -289,10 +328,10 @@
     /**
      * Confirm amendment
      */
-    AmendManager.prototype.renderConfirmationForm = function(node, $oldForm) {
+    AmendManager.prototype.renderConfirmationForm = function(node, extra, $oldForm) {
       // Get previous data
       var $node = $(node),
-          original = $node.html(),
+          original = this.getOriginalText(node),
           data = this.getFormData($oldForm);
       
       // Build new form
@@ -300,7 +339,8 @@
         'action': '#',
         'class': 'confirm-amend'
       }).append($('<div>', {
-        'html': this.renderTextDiff(original, data['amendment']),
+        'html': extra ? data['amendment'] 
+                : this.renderTextDiff(original, data['amendment']),
         'class': 'amendment-textarea'
       })).append($('<label>', {
         'for': 'reason',
@@ -340,6 +380,7 @@
         // Create amendment
         $.extend(data, self.getFormData($confirmForm));
         data['reference'] = $node.attr(self.attrname);
+        data['extra'] = extra;
         data['status'] = 'pending';
         self.api.create(data, function() {
           // Reset
@@ -398,6 +439,17 @@
       return variable === undefined || variable === ""; 
     };
 
+    /**
+     * Get original text
+     */
+    AmendManager.prototype.getOriginalText = function(node) {
+      var text = node.innerHTML;
+      $('span', node).each(function(){
+        text = this.innerHTML;
+      });      
+      return text;
+    };
+    
     /**
      * Render index
      */

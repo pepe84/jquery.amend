@@ -1,12 +1,19 @@
 /* Original text */
 
-*[data-reference] {
+.original-text {
     border: 1px solid transparent;
 }
-*[data-reference]:hover {
+.original-text:hover {
     border: 1px dashed #999;
     background: #F7F08B;
     cursor: text;
+}
+
+/* New text */
+
+.add-new-text {
+    text-decoration: none;
+    margin-left: 10px;
 }
 
 /* Amendments */
@@ -40,6 +47,7 @@
         background: #fff;
         margin-bottom: 2px;
     }
+        .amendment-text .plus,
         .amendment-reason span,
         .amendment-author,
         .amendment-status {
@@ -80,7 +88,8 @@
 }
 .amendment-submit,
 .amendment-cancel,
-.amendment-delete {
+.amendment-delete,
+.add-new-text {
     background-color: #999;
     color: #fff;
     padding: 4px 10px;
@@ -88,7 +97,8 @@
     cursor: pointer;
 }
 .amendment-submit:hover,
-.amendment-cancel:hover {
+.amendment-cancel:hover,
+.add-new-text:hover {
     background-color: #777;
 }
 .amendment-submit,
