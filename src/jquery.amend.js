@@ -258,27 +258,28 @@
       // Add form events
       var self = this;
       
-      $('.amendment-submit', $amendForm).click(function(event) {
+      var submit = function(event) {
         // Build confirmation form
         self.renderConfirmationForm(node, $amendForm);
         // Avoid submit
         event.preventDefault();
         return false;
+      };
+      
+      // Submit form
+      $amendForm.submit(submit);
+      $('.amendment-submit', $amendForm).click(submit);
+      
+      $('.amendment-delete', $amendForm).click(function(event) {
+        $('textarea', $amendForm).val("");
+        submit(event);
       });
-
+      
+      // Cancel
       $('.amendment-cancel', $amendForm).click(function(event) {
         // Reset
         $amendForm.remove();
         $node.show();
-        // Avoid submit
-        event.preventDefault();
-        return false;
-      });
-
-      $('.amendment-delete', $amendForm).click(function(event) {
-        // Build confirmation form
-        $('textarea', $amendForm).val("");
-        self.renderConfirmationForm(node, $amendForm);
         // Avoid submit
         event.preventDefault();
         return false;
@@ -335,12 +336,7 @@
       // Add form events
       var self = this;
 
-      var close = function() {
-        $confirmForm.remove();
-        $node.show();        
-      };
-      
-      $('.amendment-submit', $confirmForm).click(function(event) {
+      var submit = function(event) {
         // Create amendment
         $.extend(data, self.getFormData($confirmForm));
         data['reference'] = $node.attr(self.attrname);
@@ -354,8 +350,18 @@
         // Avoid submit
         event.preventDefault();
         return false;
-      });
+      };
 
+      var close = function() {
+        $confirmForm.remove();
+        $node.show();        
+      };
+      
+      // Submit form
+      $confirmForm.submit(submit);
+      $('.amendment-submit', $confirmForm).click(submit);
+      
+      // Cancel
       $('.amendment-cancel', $confirmForm).click(function(event) {
         // Reset
         close();
