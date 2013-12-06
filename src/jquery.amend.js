@@ -277,6 +277,20 @@
         'class': 'amendment-cancel'
       }));
  
+      // Form submit
+      var self = this;
+      
+      var submit = function(event, deleteButton) {
+        var value = $('textarea', $amendForm).val();
+        if ((!self.isEmpty(value) && value !== original) || deleteButton) {
+          // Build confirmation form
+          self.renderConfirmationForm(node, extra, $amendForm);
+        }
+        // Avoid submit
+        event.preventDefault();
+        return false;
+      };
+ 
       // Render new form
       if (extra) {
         $amendForm.prepend($('<label>', {
@@ -296,35 +310,20 @@
           'value': this.t('Delete text'),
           'type': 'button',
           'class': 'amendment-delete'
+        }).click(function(event) {
+          // Delete event
+          $('textarea', $amendForm).val("");
+          submit(event, true);
         }));
       }
       
       $node.after($amendForm);
-
-      // Add form events
-      var self = this;
       
-      var submit = function(event) {
-        var value = $('textarea', $amendForm).val();
-        if (!self.isEmpty(value) && value !== original) {
-          // Build confirmation form
-          self.renderConfirmationForm(node, extra, $amendForm);
-        }
-        // Avoid submit
-        event.preventDefault();
-        return false;
-      };
-      
-      // Submit form
+      // Submit event
       $amendForm.submit(submit);
       $('.amendment-submit', $amendForm).click(submit);
       
-      $('.amendment-delete', $amendForm).click(function(event) {
-        $('textarea', $amendForm).val("");
-        submit(event);
-      });
-      
-      // Cancel
+      // Cancel event
       $('.amendment-cancel', $amendForm).click(function(event) {
         // Reset
         $amendForm.remove();
@@ -387,7 +386,7 @@
       $oldForm.before($confirmForm).remove();
       $('textarea', $confirmForm).focus();
       
-      // Add form events
+      // Form events
       var self = this;
 
       var submit = function(event) {
@@ -412,11 +411,11 @@
         $node.show();        
       };
       
-      // Submit form
+      // Submit event
       $confirmForm.submit(submit);
       $('.amendment-submit', $confirmForm).click(submit);
       
-      // Cancel
+      // Cancel event
       $('.amendment-cancel', $confirmForm).click(function(event) {
         // Reset
         close();
