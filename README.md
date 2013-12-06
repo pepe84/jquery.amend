@@ -56,3 +56,5 @@ A list of amendments, each amendment should contain:
 * "Delete text"
 * "Name"
 * "Confirm"
+* "+"
+* "Add new text inside"

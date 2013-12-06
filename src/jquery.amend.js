@@ -13,7 +13,7 @@
  * - t: function(text) to translate statuses and other stuff
  * - attrname: html attribute containing text id ("data-reference" by default)
  * - index: selector to attach original text index (using headers with id)
- *
+ * 
  * Amendments should have this data structure:
  *
  * - id: amendment unique id
@@ -21,7 +21,7 @@
  * - amendment: new text
  * - reason: amendment's justification
  * - author: username
- * - status: "pending", "approved" or "rejected"
+ * - status: "pending", "approved" or "rejected" 
  *
  * HTML should contain only headers and paragraphs identified by custom attr
  * and CSS could be customized using library specific selectors.
@@ -219,7 +219,7 @@
             original = node.innerHTML;
         
         // Add new text
-        if ($(node).is(':header')) {
+        if ($(node).is(':header[id]')) {
           $(node)
             .empty()
             .append($('<span>', {
@@ -229,7 +229,7 @@
             .append($('<a>', {
               'href': '#',
               'class': 'add-new-text',
-              'html': '+'
+              'html': self.t('+')
             }).click(function(event) {
               self.renderForm(node, true);
               // Avoid follow
@@ -261,7 +261,7 @@
       // Build new form
       var $amendForm = $('<form>', {
         'action': '#',
-        'class': 'add-amendment-form'
+        'class': 'amendment-form'
       }).append($('<textarea>', {
         'name': 'amendment',
         'class': 'amendment-textarea'
@@ -278,7 +278,14 @@
       }));
  
       // Render new form
-      if (!extra) {
+      if (extra) {
+        $amendForm.prepend($('<label>', {
+          'for': 'amendment',
+          'html': '<span>' + this.t('Add new text inside') + '</span> ' 
+                  + original,
+          'class': 'amendment-label'
+        }));
+      } else {
         $node.hide();
         $('textarea', $amendForm)
           .html(original)
@@ -298,8 +305,11 @@
       var self = this;
       
       var submit = function(event) {
-        // Build confirmation form
-        self.renderConfirmationForm(node, extra, $amendForm);
+        var value = $('textarea', $amendForm).val();
+        if (!self.isEmpty(value) && value !== original) {
+          // Build confirmation form
+          self.renderConfirmationForm(node, extra, $amendForm);
+        }
         // Avoid submit
         event.preventDefault();
         return false;
@@ -337,8 +347,12 @@
       // Build new form
       var $confirmForm = $('<form>', {
         'action': '#',
-        'class': 'confirm-amend'
-      }).append($('<div>', {
+        'class': 'amendment-form'
+      }).append($('<label>', {
+        'for': 'amendment',
+        'html': this.t('Amendment'),
+        'class': 'amendment-label'
+      })).append($('<div>', {
         'html': extra ? data['amendment'] 
                 : this.renderTextDiff(original, data['amendment']),
         'class': 'amendment-textarea'

@@ -79,18 +79,26 @@
     
 /* Forms */
 
+.amendment-form {
+    background: #ccc;
+    padding: 4px;
+}
+.amendment-label span {
+    font-weight: bold;
+}
 .amendment-textarea,
 .amendment-input {
     border: none;
     background: #fff;
     width: 98%;
     padding: 1%;
+    margin: 0 0 4px 0;
 }
 .amendment-submit,
 .amendment-cancel,
 .amendment-delete,
 .add-new-text {
-    background-color: #999;
+    background-color: #777;
     color: #fff;
     padding: 4px 10px;
     border: none;
@@ -99,7 +107,7 @@
 .amendment-submit:hover,
 .amendment-cancel:hover,
 .add-new-text:hover {
-    background-color: #777;
+    background-color: #444;
 }
 .amendment-submit,
 .amendment-cancel {
