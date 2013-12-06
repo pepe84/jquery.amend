@@ -17,9 +17,9 @@ $(selector).amend(options, data);
 
 ###options###
 * __create__: function(params, callback) to save a new amendment
-* __delete__: function(id, callback) to delete an amendment
-* __t__: function(text) to translate statuses and other stuff
-* __attrname__: html attribute containing text id ("data-reference" by default)
+* __t__ (optional): function(text) to translate statuses and other stuff
+* __attrname__ (optional): html attribute containing text id ("data-reference" by default)
+* __index__ (optional): selector to attach original text index (using headers with id)
 
 ###data###
 

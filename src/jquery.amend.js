@@ -4,13 +4,15 @@
  * persistance system to store data and google-diff-match-patch library 
  * (http://code.google.com/p/google-diff-match-patch/) to visualize amendments.
  * 
- * Plugin configuration must cointain the following properties
- * to work properly:
+ * Plugin configuration must cointain the following properties to work properly:
  *
  * - create: function(params, callback) to save a new amendment
- * - delete: function(id, callback) to delete an amendment
+ * 
+ * These are optional:
+ * 
  * - t: function(text) to translate statuses and other stuff
  * - attrname: html attribute containing text id ("data-reference" by default)
+ * - index: selector to attach original text index (using headers with id)
  *
  * Amendments should have this data structure:
  *
@@ -38,7 +40,8 @@
     'create': null,
     'delete': null,
     't': function(text) { return text; },
-    'attrname': 'data-reference'
+    'attrname': 'data-reference',
+    'index': null
   };
 
   validateOpts = function(options) {
@@ -48,7 +51,8 @@
     $.each(options, function(name) {
       if (defaultOpts[name] === undefined) {
         return error('Unknown option: "' + name + '"');
-      } else if (!$.isFunction(options[name])) {
+      } else if ($.inArray(name, ['create', 'delete', 't']) !== -1 && 
+          !$.isFunction(options[name])) {
         return error('Option "' + name + '" is not a function.');
       }
     });
@@ -91,12 +95,15 @@
       // Start amendments system
       this.initHtml(data);
       this.initEvents();
+      
+      // Optional index
+      if (!this.isEmpty(defaultOpts['index'])) {
+        this.renderIndex(defaultOpts['index']);
+      }
     }
-    
+
     /**
      * Initialize HTML
-     * 
-     * TODO Iterate amendments and use data-reference to add them to p
      */
     AmendManager.prototype.initHtml = function(data) {
       
@@ -383,6 +390,25 @@
      */
     AmendManager.prototype.isEmpty = function(variable) {    
       return variable === undefined || variable === ""; 
+    };
+
+    /**
+     * Render index
+     */
+    AmendManager.prototype.renderIndex = function(selector) {
+      var self = this;
+      
+      $(selector).append(
+        $(':header[id]', this.target)
+          .clone()
+          .each(function() {
+            $(this).html(
+              '<a href="#' + this.id + '">' + this.innerHTML + '</a>'
+            )
+            .removeAttr('id')
+            .removeAttr(self.attrname);
+          })
+      );
     };
     
     return AmendManager;
