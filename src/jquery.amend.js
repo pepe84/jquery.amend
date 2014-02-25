@@ -229,7 +229,7 @@
             .append($('<a>', {
               'href': '#',
               'class': 'add-new-text',
-              'html': self.t('+')
+              'html': self.t('+', node.nodeName)
             }).click(function(event) {
               self.renderForm(node, true);
               // Avoid follow

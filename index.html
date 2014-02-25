@@ -45,6 +45,13 @@
             #law-index h2 {
                 padding-left: 10px;
             }
+            #law-index h3 {
+                padding-left: 20px;
+            }
+        .add-new-text {
+            float: right;
+            font-size: 0.7em;
+        }
     </style>
   </head>
   <body>
@@ -54,21 +61,21 @@
         <p data-reference="0.1" class="text">Praesent aliquet commodo mauris non porta. In sit amet tincidunt massa. Maecenas id arcu eget leo consequat molestie. Mauris et sapien fringilla, pretium justo non, aliquet nunc. Suspendisse feugiat congue ipsum, nec elementum massa condimentum eu. In hendrerit molestie facilisis. Morbi pretium ullamcorper tortor sit amet cursus.</p>
         <h1 id="title1" data-reference="t1">Title I. Rights, freedoms and duties</h1>
         <h2 id="title1-section1" data-reference="t1.s1">Section 1. Rights and freedom</h2>
-        <h3 data-reference="1">Article 1</h2>
+        <h3 id="art1" data-reference="1">Article 1</h2>
         <p data-reference="1.1" class="text">Donec sem massa, consectetur sit amet tempor sed, hendrerit eget tortor. Mauris dolor neque, suscipit cursus tristique ac, feugiat id urna. Nullam pharetra lorem sit amet volutpat aliquet. Cras ac ultricies ipsum. Donec id odio nec justo dapibus pulvinar. Cras nulla tellus, vulputate sed lacus vel, cursus facilisis leo.</p>
         <p data-reference="1.2" class="text">Donec sem massa, consectetur sit amet tempor sed, hendrerit eget tortor. Mauris dolor neque, suscipit cursus tristique ac, feugiat id urna. Nullam pharetra lorem sit amet volutpat aliquet. Cras ac ultricies ipsum. Donec id odio nec justo dapibus pulvinar. Cras nulla tellus, vulputate sed lacus vel, cursus facilisis leo.</p>
-        <h3 data-reference="2">Article 2</h2>
+        <h3 id="art2" data-reference="2">Article 2</h2>
         <p data-reference="2.1" class="text">Nulla aliquet magna quis pharetra placerat. Pellentesque malesuada elit vitae felis consectetur accumsan. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Suspendisse potenti. In sed posuere sem, sit amet iaculis ipsum.</p>
         <h2 id="title1-section2" data-reference="t1.s2">Section 2. Responsabilities</h2>
-        <h3 data-reference="3">Article 3</h2>
+        <h3 id="art3" data-reference="3">Article 3</h2>
         <p data-reference="3.1" class="text">In hac habitasse platea dictumst. Mauris felis lacus, adipiscing et quam in, feugiat tincidunt nulla. Nam vel libero nibh. Suspendisse sollicitudin urna non convallis aliquet.</p>
         <h1 id="title2" data-reference="t2">Title II. Economy</h1>
-        <h3 data-reference="4">Article 4</h3>
+        <h3 id="art4" data-reference="4">Article 4</h3>
         <p data-reference="4.1" class="text">Nulla aliquet magna quis pharetra placerat. Pellentesque malesuada elit vitae felis consectetur accumsan. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Suspendisse potenti. In sed posuere sem, sit amet iaculis ipsum.</p>
         <p data-reference="4.2" class="text">Nulla aliquet magna quis pharetra placerat. Pellentesque malesuada elit vitae felis consectetur accumsan. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Suspendisse potenti. In sed posuere sem, sit amet iaculis ipsum.</p>
-        <h3 data-reference="5">Article 5</h2>
+        <h3 id="art5" data-reference="5">Article 5</h2>
         <p data-reference="5.1" class="text">Donec sem massa, consectetur sit amet tempor sed, hendrerit eget tortor. Mauris dolor neque, suscipit cursus tristique ac, feugiat id urna. Nullam pharetra lorem sit amet volutpat aliquet. Cras ac ultricies ipsum. Donec id odio nec justo dapibus pulvinar. Cras nulla tellus, vulputate sed lacus vel, cursus facilisis leo.</p>
-        <h3 data-reference="6">Article 6</h2>
+        <h3 id="art6" data-reference="6">Article 6</h2>
         <p data-reference="6.1" class="text">Nulla aliquet magna quis pharetra placerat. Pellentesque malesuada elit vitae felis consectetur accumsan. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Suspendisse potenti. In sed posuere sem, sit amet iaculis ipsum.</p>
         <p data-reference="6.2" class="text">Nulla aliquet magna quis pharetra placerat. Pellentesque malesuada elit vitae felis consectetur accumsan. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Suspendisse potenti. In sed posuere sem, sit amet iaculis ipsum.</p>
       </div>
@@ -88,6 +95,21 @@
         "delete": function(id, callback) {
           alert('Success deleting amendment ' + id);
           callback();
+        },
+        "t": function(text, tag) {
+            if (!tag) {
+                tag = 'p';
+            }
+            switch (tag.toLowerCase()) {
+                case 'h1':
+                    return 'Add new section';
+                case 'h2':
+                    return 'Add new article';
+                case 'h3':
+                    return 'Add new point';
+                default:
+                    return text;
+            }
         },
         "index": "#law-index"
       }, [
