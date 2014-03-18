@@ -488,11 +488,14 @@
 
 
   $.fn["amend"] = function (options, data) {
-    if (!$.data(this, "amend")) {
-      $.data(this, "amend", new AmendManager(this, options, data));
-    } else {
-      console.log('Amendments system already initialized on this node!', this);
-    }
+    return this.each(function() {
+      // Do something to each element here.
+      if (!$.data(this, "amend")) {
+        $.data(this, "amend", new AmendManager(this, options, data));
+      } else if (console) {
+        console.log('Amendments system already initialized on this node!', this);
+      }
+    });
   };
 
 }(window,document,jQuery));
