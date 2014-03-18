@@ -20,6 +20,7 @@ $(selector).amend(options, data);
 * __t__ (optional): function(text) to translate statuses and other stuff
 * __attrname__ (optional): html attribute containing text id ("data-reference" by default)
 * __index__ (optional): selector to attach original text index (using headers with id)
+* __style__ (optional): custom class names for form elements (see default opts)
 
 ###data###
 
@@ -37,7 +38,7 @@ A list of amendments, each amendment should contain:
 ##HTML and style##
 
 * HTML should contain only headers and paragraphs identified by custom attribute (see an example at _index.html_)
-* CSS could be customized using library specific selectors (see _jquery.amend.css_)
+* CSS could be customized using _style_ config and library specific selectors (see _jquery.amend.css_)
 
 ***
 

@@ -13,6 +13,7 @@
  * - t: function(text) to translate statuses and other stuff
  * - attrname: html attribute containing text id ("data-reference" by default)
  * - index: selector to attach original text index (using headers with id)
+ * - style: custom class names for form elements (see default opts)
  * 
  * Amendments should have this data structure:
  *
@@ -41,7 +42,19 @@
     'delete': null, // TODO
     't': function(text) { return text; },
     'attrname': 'data-reference',
-    'index': null
+    'index': null,
+    'style': {
+      'form':     'amend-form',
+      'label':    'amend-label',
+      'input':    'amend-input',
+      'textarea': 'amend-textarea',
+      'button':   {
+        'default':  'amend-button',
+        'submit':   'amend-submit',
+        'cancel':   'amend-cancel',
+        'delete':   'amend-delete'
+      }
+    }
   };
 
   validateOpts = function(options) {
@@ -72,6 +85,7 @@
       };
       this.t = defaultOpts['t'];
       this.attrname = defaultOpts['attrname'];
+      this.style = defaultOpts['style'];
       
       // System constants
       this.statuses = {
@@ -261,20 +275,20 @@
       // Build new form
       var $amendForm = $('<form>', {
         'action': '#',
-        'class': 'amendment-form'
+        'class': this.style.form
       }).append($('<textarea>', {
         'name': 'amendment',
-        'class': 'amendment-textarea'
-      })).append($('<input>', {
+        'class': this.style.textarea
+      })).append($('<button>', {
         'name': 'submit',
-        'value': this.t('Send'),
-        'type': 'button',
-        'class': 'amendment-submit'
-      })).append($('<input>', {
+        'html': this.t('Send'),
+        'type': 'submit',
+        'class': this.style.button.default + ' ' + this.style.button.submit
+      })).append($('<button>', {
         'name': 'cancel',
-        'value': this.t('Cancel'),
+        'html': this.t('Cancel'),
         'type': 'button',
-        'class': 'amendment-cancel'
+        'class': this.style.button.default + ' ' + this.style.button.cancel
       }));
  
       // Form submit
@@ -297,7 +311,7 @@
           'for': 'amendment',
           'html': '<span>' + this.t('Add new text inside') + '</span> ' 
                   + original,
-          'class': 'amendment-label'
+          'class': this.style.label
         }));
       } else {
         $node.hide();
@@ -305,11 +319,11 @@
           .html(original)
           .css('height', ($node.height()+20) + 'px')
           .focus();
-        $amendForm.append($('<input>', {
+        $amendForm.append($('<button>', {
           'name': 'delete',
-          'value': this.t('Delete text'),
+          'html': this.t('Delete text'),
           'type': 'button',
-          'class': 'amendment-delete'
+          'class': this.style.button.default + ' ' + this.style.button.delete
         }).click(function(event) {
           // Delete event
           $('textarea', $amendForm).val("");
@@ -321,10 +335,10 @@
       
       // Submit event
       $amendForm.submit(submit);
-      $('.amendment-submit', $amendForm).click(submit);
+      $('.amend-submit', $amendForm).click(submit);
       
       // Cancel event
-      $('.amendment-cancel', $amendForm).click(function(event) {
+      $('.amend-cancel', $amendForm).click(function(event) {
         // Reset
         $amendForm.remove();
         $node.show();
@@ -346,40 +360,40 @@
       // Build new form
       var $confirmForm = $('<form>', {
         'action': '#',
-        'class': 'amendment-form'
+        'class': this.style.form
       }).append($('<label>', {
         'for': 'amendment',
         'html': this.t('Amendment'),
-        'class': 'amendment-label'
+        'class': this.style.label
       })).append($('<div>', {
         'html': extra ? data['amendment'] 
                 : this.renderTextDiff(original, data['amendment']),
-        'class': 'amendment-textarea'
+        'class': this.style.textarea
       })).append($('<label>', {
         'for': 'reason',
         'html': this.t('Reason'),
-        'class': 'amendment-label'
+        'class': this.style.label
       })).append($('<textarea>', {
         'name': 'reason',
-        'class': 'amendment-textarea'
+        'class': this.style.textarea
       })).append($('<label>', {
         'for': 'author',
         'html': this.t('Name'),
-        'class': 'amendment-label'
+        'class': this.style.label
       })).append($('<input>', {
         'name': 'author',
         'type': 'text',
-        'class': 'amendment-input'
-      })).append($('<input>', {
+        'class': this.style.input
+      })).append($('<button>', {
         'name': 'submit',
-        'value': this.t('Confirm'),
-        'type': 'button',
-        'class': 'amendment-submit'
-      })).append($('<input>', {
+        'html': this.t('Confirm'),
+        'type': 'submit',
+        'class': this.style.button.default + ' ' + this.style.button.submit
+      })).append($('<button>', {
         'name': 'cancel',
-        'value': this.t('Cancel'),
+        'html': this.t('Cancel'),
         'type': 'button',
-        'class': 'amendment-cancel'
+        'class': this.style.button.default + ' ' + this.style.button.cancel
       }));
       
       // Render new form
@@ -413,10 +427,10 @@
       
       // Submit event
       $confirmForm.submit(submit);
-      $('.amendment-submit', $confirmForm).click(submit);
+      $('.amend-submit', $confirmForm).click(submit);
       
       // Cancel event
-      $('.amendment-cancel', $confirmForm).click(function(event) {
+      $('.amend-cancel', $confirmForm).click(function(event) {
         // Reset
         close();
         // Avoid submit

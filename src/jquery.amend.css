@@ -79,24 +79,22 @@
     
 /* Forms */
 
-.amendment-form {
+.amend-form {
     background: #ccc;
     padding: 4px;
 }
-.amendment-label span {
+.amend-label span {
     font-weight: bold;
 }
-.amendment-textarea,
-.amendment-input {
+.amend-textarea,
+.amend-input {
     border: none;
     background: #fff;
     width: 98%;
     padding: 1%;
     margin: 0 0 4px 0;
 }
-.amendment-submit,
-.amendment-cancel,
-.amendment-delete,
+.amend-button,
 .add-new-text {
     background-color: #777;
     color: #fff;
@@ -104,20 +102,20 @@
     border: none;
     cursor: pointer;
 }
-.amendment-submit:hover,
-.amendment-cancel:hover,
+.amend-submit:hover,
+.amend-cancel:hover,
 .add-new-text:hover {
     background-color: #444;
 }
-.amendment-submit,
-.amendment-cancel {
+.amend-submit,
+.amend-cancel {
     width: 150px;
     margin-right: 10px;
 }
-.amendment-delete {
+.amend-delete {
     background-color: #C9002F;
     float: right;
 }
-.amendment-delete:hover {
+.amend-delete:hover {
     background-color: #9E0025;    
 }
