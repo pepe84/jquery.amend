@@ -37,14 +37,14 @@ A list of amendments, each amendment should contain:
 
 ##Events##
 
-*__jqa-toggle__: listens to expand/collapse amendments trigger
-*__jqa-render__: listens to render amendments trigger
-*__jqa-counter__: triggered when amendments counter is updated
-*__jqa-new__: listens to add new text trigger
-*__jqa-ready__: triggered when amend / new text form is rendered
-*__jqa-submit__: triggered when data form is submitted
-*__jqa-cancel__: triggered when any form is canceled
-*__jqa-confim__: triggered when confirm form is submitted
+* __jqa-toggle__: listens to expand/collapse amendments trigger
+* __jqa-render__: listens to render amendments trigger
+* __jqa-counter__: triggered when amendments counter is updated
+* __jqa-new__: listens to add new text trigger
+* __jqa-ready__: triggered when amend / new text form is rendered
+* __jqa-submit__: triggered when data form is submitted
+* __jqa-cancel__: triggered when any form is canceled
+* __jqa-confim__: triggered when confirm form is submitted
 
 ***
 
