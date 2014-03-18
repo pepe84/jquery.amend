@@ -31,9 +31,11 @@
             float: right;
             width: 220px;
         }
-        #law-index {
+        #explanation {
             position: fixed;
             width: 220px;
+        }
+        #law-index {
             font-size: 0.65em;
             font-weight: normal;
         }
@@ -84,82 +86,145 @@
           <h1>How it works?</h1>
           <p>Click on any law point or paragraph. A box where you can modify the text that you see or remove it completely will appear.</p>
           <p>You can also enter a new item, article or chapter by clicking on the button at the beginning of each section.</p>
+          <div id="law-index"></div>
         </div>
-        <div id="law-index"></div>
       </div>
     </div>
     <script src="http://code.jquery.com/jquery-git2.js"></script>
     <script src="https://neil.fraser.name/software/diff_match_patch/svn/trunk/javascript/diff_match_patch.js"></script>
     <script src="/src/jquery.amend.js"></script>
-    <script type="text/javascript">
-      $('.law').amend({
-        "create": function(data, callback) {
-          alert('Success creating amendment at ' + data['reference']);
-          callback();
-        },
-        "delete": function(id, callback) {
-          alert('Success deleting amendment ' + id);
-          callback();
-        },
-        "t": function(text, tag) {
-            if (!tag) {
-                tag = 'p';
+    <script type="text/javascript">        
+    // Show index
+    $('#law-index').append(
+      $('.law :header[id]')
+        .clone()
+        .each(function() {
+          $(this).html(
+            '<a href="#' + this.id + '">' + this.innerHTML + '</a>'
+          )
+          .removeAttr('id');
+        })
+    );
+    
+    // Initalize listener
+    var $fake = $('<div>', {
+        'id': 'fake'
+    }).on('jqa-confirm', function(event, data, callback) {
+        alert('Success creating amendment at ' + data['reference']);
+        callback(true);
+    }).hide();
+    $('body').after($fake);
+    
+    $('.law *').each(function(){        
+        
+        var elem = this;
+        
+        // Expand/collapse amendments link
+        var $link = $('<a>', {
+            'href': '#',
+            'class': 'show-amendments closed',
+            'html': '0 amendments'
+        }).on('jqa-counter', function(event, count){
+            $(this).html(count + ' amendment' + (count === 1 ? '' : 's'));
+        }).click(function(event){
+            $(this).toggleClass('opened').toggleClass('closed');
+            $(elem).trigger('jqa-toggle');
+            // Avoid follow            
+            event.preventDefault();
+            return false;
+        });
+        
+        // Initalize amendments plugin
+        $(this).amend({
+            listeners: [
+                $fake,
+                $link
+            ],
+            t: function(text, tag) {
+                if (!tag) {
+                    tag = 'p';
+                }
+                switch (tag.toLowerCase()) {
+                    case 'h1':
+                        return 'Add new section';
+                    case 'h2':
+                        return 'Add new article';
+                    case 'h3':
+                        return 'Add new point';
+                    default:
+                        return text;
+                }
             }
-            switch (tag.toLowerCase()) {
-                case 'h1':
-                    return 'Add new section';
-                case 'h2':
-                    return 'Add new article';
-                case 'h3':
-                    return 'Add new point';
-                default:
-                    return text;
+          }, [
+            {
+              "id":"1", 
+              "reference": "1.1",
+              "amendment": "Donec sem massa, consectetur sit amet tempor sed, hendrerit eget tortor. Mauris dolor neque, suscipit cursus tristique ac, feugiat id urna. Nullam pharetra lorem sit amet volutpat aliquet. Donec id odio nec justo dapibus pulvinar. Cras nulla tellus et nutella, vulputate sed lacus vel, cursus facilisis leo.",
+              "reason": "This is real. Or not?",
+              "author": "pepe",
+              "status": "pending"
+            },
+            {
+              "id":"2", 
+              "reference": "1.2",
+              "amendment": "Donec sem massa, consectetur sit amet tempor sed, hendrerit eget tortor. Mauris dolor neque, cursus tristique ac ipsum, feugiat id urna. Nullam pharetra lorem sit amet volutpat aliquet. Cras ac ultricies. Donec id odio nec justo dapibus pulvinar. Cras nulla tellus, vulputate sed lacus vel, cursus facilisis leo.",
+              "reason": "I have a feeling...",
+              "author": "laura",
+              "status": "approved"
+            },        {
+              "id":"3", 
+              "reference": "3.1",
+              "amendment": "In hac habitasse platea dictumst. Oh! Mauris felis lacus, adipiscing et quam in, feugiat tincidunt nulla. Nam testing amendment. Suspendisse sollicitudin urna non convallis aliquet. ",
+              "reason": "Not in my name.",
+              "author": "mike",
+              "status": "rejected"
+            },
+            {
+              "id":"4", 
+              "reference": "t1",
+              "amendment": "Section 3. Environment",
+              "reason": "I miss a chapter for environment policies. Please, work on a proposal.",
+              "author": "jackie",
+              "status": "approved",
+              "extra": true
+            },
+            {
+              "id":"5", 
+              "reference": "6",
+              "amendment": "Aliquam porttitor sodales mattis. Vestibulum eros augue, fringilla in quam pulvinar, pulvinar semper elit. Nullam venenatis eros vehicula leo mollis mollis. Suspendisse sit amet turpis sit amet orci semper congue eget at lectus. ",
+              "reason": "We need to be more specific.",
+              "author": "jackie",
+              "status": "approved",
+              "extra": true
             }
-        },
-        "index": "#law-index"
-      }, [
-        {
-          "id":"1", 
-          "reference": "1.1",
-          "amendment": "Donec sem massa, consectetur sit amet tempor sed, hendrerit eget tortor. Mauris dolor neque, suscipit cursus tristique ac, feugiat id urna. Nullam pharetra lorem sit amet volutpat aliquet. Donec id odio nec justo dapibus pulvinar. Cras nulla tellus et nutella, vulputate sed lacus vel, cursus facilisis leo.",
-          "reason": "This is real. Or not?",
-          "author": "pepe",
-          "status": "pending"
-        },
-        {
-          "id":"2", 
-          "reference": "1.2",
-          "amendment": "Donec sem massa, consectetur sit amet tempor sed, hendrerit eget tortor. Mauris dolor neque, cursus tristique ac ipsum, feugiat id urna. Nullam pharetra lorem sit amet volutpat aliquet. Cras ac ultricies. Donec id odio nec justo dapibus pulvinar. Cras nulla tellus, vulputate sed lacus vel, cursus facilisis leo.",
-          "reason": "I have a feeling...",
-          "author": "laura",
-          "status": "approved"
-        },        {
-          "id":"3", 
-          "reference": "3.1",
-          "amendment": "In hac habitasse platea dictumst. Oh! Mauris felis lacus, adipiscing et quam in, feugiat tincidunt nulla. Nam testing amendment. Suspendisse sollicitudin urna non convallis aliquet. ",
-          "reason": "Not in my name.",
-          "author": "mike",
-          "status": "rejected"
-        },
-        {
-          "id":"4", 
-          "reference": "t1",
-          "amendment": "Section 3. Environment",
-          "reason": "I miss a chapter for environment policies. Please, work on a proposal.",
-          "author": "jackie",
-          "status": "approved",
-          "extra": true
-        },
-        {
-          "id":"5", 
-          "reference": "6",
-          "amendment": "Aliquam porttitor sodales mattis. Vestibulum eros augue, fringilla in quam pulvinar, pulvinar semper elit. Nullam venenatis eros vehicula leo mollis mollis. Suspendisse sit amet turpis sit amet orci semper congue eget at lectus. ",
-          "reason": "We need to be more specific.",
-          "author": "jackie",
-          "status": "approved",
-          "extra": true
+        ]);
+        
+        // Amend text event
+        $(this).after($link);
+        
+        // Add new text event        
+        if ($(this).is(':header[id]')) {
+            var original = this.innerHTML;
+            $(this)
+                .empty()
+                .append($('<span>', {
+                    'class': 'original-text',
+                    'html': original
+                }))
+                .append($('<a>', {
+                    'href': '#',
+                    'class': 'add-new-text',
+                    'html': '+'
+                }).click(function(event){
+                    $(elem).trigger('jqa-new');
+                    // Avoid follow            
+                    event.preventDefault();
+                    return false;
+                }));
+        } else {
+            $(this).addClass('original-text');
         }
-      ]);
+    });
     </script>
   </body>
 </html>

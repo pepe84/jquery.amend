@@ -16,11 +16,11 @@ $(selector).amend(options, data);
 ```
 
 ###options###
-* __create__: function(params, callback) to save a new amendment
-* __t__ (optional): function(text) to translate statuses and other stuff
 * __attrname__ (optional): html attribute containing text id ("data-reference" by default)
-* __index__ (optional): selector to attach original text index (using headers with id)
+* __listeners__: collection of listeners (see _Events_ section)
+* __statuses__ (optional): custom amendment status map (see default opts)
 * __style__ (optional): custom class names for form elements (see default opts)
+* __t__ (optional): function(text) to translate statuses and other stuff (returns same text by default)
 
 ###data###
 
@@ -35,6 +35,19 @@ A list of amendments, each amendment should contain:
 
 ***
 
+##Events##
+
+*__jqa-toggle__: listens to expand/collapse amendments trigger
+*__jqa-render__: listens to render amendments trigger
+*__jqa-counter__: triggered when amendments counter is updated
+*__jqa-new__: listens to add new text trigger
+*__jqa-ready__: triggered when amend / new text form is rendered
+*__jqa-submit__: triggered when data form is submitted
+*__jqa-cancel__: triggered when any form is canceled
+*__jqa-confim__: triggered when confirm form is submitted
+
+***
+
 ##HTML and style##
 
 * HTML should contain only headers and paragraphs identified by custom attribute (see an example at _index.html_)
@@ -44,18 +57,12 @@ A list of amendments, each amendment should contain:
 
 ##Available translations##
 
-* "Awaiting review"
-* "Amendment approved"
-* "Amendment rejected"
-* "Reason"
-* "sent by"
-* "anonymous"
-* "amendment"
-* "amendments"
 * "Send"
 * "Cancel"
 * "Delete text"
+* "Amendment"
+* "Reason"
 * "Name"
 * "Confirm"
-* "+"
-* "Add new text inside"
+* "sent by"
+* "anonymous"

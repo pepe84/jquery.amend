@@ -3,7 +3,7 @@
 .original-text {
     border: 1px solid transparent;
 }
-.original-text:hover {
+p.original-text:hover {
     border: 1px dashed #999;
     background: #F7F08B;
     cursor: text;

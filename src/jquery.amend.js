@@ -4,16 +4,13 @@
  * persistance system to store data and google-diff-match-patch library 
  * (http://code.google.com/p/google-diff-match-patch/) to visualize amendments.
  * 
- * Plugin configuration must cointain the following properties to work properly:
- *
- * - create: function(params, callback) to save a new amendment
+ * Plugin configuration requires the following properties to work properly:
  * 
- * These are optional:
- * 
- * - t: function(text) to translate statuses and other stuff
  * - attrname: html attribute containing text id ("data-reference" by default)
- * - index: selector to attach original text index (using headers with id)
+ * - listeners: collection of listeners
+ * - statuses: custom amendment status map (see default opts)
  * - style: custom class names for form elements (see default opts)
+ * - t: function(text) to translate statuses and other stuff (returns same text by default)
  * 
  * Amendments should have this data structure:
  *
@@ -25,7 +22,7 @@
  * - status: "pending", "approved" or "rejected" 
  *
  * HTML should contain only headers and paragraphs identified by custom attr
- * and CSS could be customized using library specific selectors.
+ * and CSS could be customized using config and library specific selectors.
  */
 
 (function(window,document,$,undefined) {
@@ -38,11 +35,8 @@
   };
 
   defaultOpts = {
-    'create': null,
-    'delete': null, // TODO
-    't': function(text) { return text; },
     'attrname': 'data-reference',
-    'index': null,
+    'listeners': [],
     'style': {
       'form':     'amend-form',
       'label':    'amend-label',
@@ -54,9 +48,15 @@
         'cancel':   'amend-cancel',
         'delete':   'amend-delete'
       }
-    }
+    },
+    statuses: {
+      'pending':  'Awaiting review',
+      'approved': 'Amendment approved',
+      'rejected': 'Amendment rejected'
+    },
+    't': function(text) { return text; }
   };
-
+  
   validateOpts = function(options) {
     if (!(options && $.isPlainObject(options))) {
       return false;
@@ -64,8 +64,7 @@
     $.each(options, function(name) {
       if (defaultOpts[name] === undefined) {
         return error('Unknown option: "' + name + '"');
-      } else if ($.inArray(name, ['create', 'delete', 't']) !== -1 && 
-          !$.isFunction(options[name])) {
+      } else if (name === 't' && !$.isFunction(options[name])) {
         return error('Option "' + name + '" is not a function.');
       }
     });
@@ -74,31 +73,16 @@
 
   var AmendManager = (function() {
 
-    function AmendManager(element, options, json) {
+    function AmendManager(elem, options, json) {
       // Initialize configuration    
-      this.target = element;
       validateOpts(options);
       $.extend(defaultOpts, options);
-      this.api = {
-        'create': defaultOpts['create'],
-        'delete': defaultOpts['delete'] // TODO
-      };
-      this.t = defaultOpts['t'];
-      this.attrname = defaultOpts['attrname'];
-      this.style = defaultOpts['style'];
-      
-      // System constants
-      this.statuses = {
-        'pending':  this.t('Awaiting review'),
-        'approved': this.t('Amendment approved'),
-        'rejected': this.t('Amendment rejected')
-      };
-      this.dmp = new diff_match_patch();
-      
-      // Optional index (before manipulating DOM)
-      if (!this.isEmpty(defaultOpts['index'])) {
-        this.renderIndex(defaultOpts['index']);
+      for (var i in defaultOpts) {
+        this[i] = defaultOpts[i];
       }
+      
+      // System
+      this.dmp = new diff_match_patch();
       
       // Preprocess data
       var data = {};
@@ -112,27 +96,37 @@
       }
       
       // Start amendments system
-      this.initHtml(data);
-      this.initEvents();
+      this.initHtml(elem, data);
+      this.initEvents(elem);
     }
 
     /**
      * Initialize HTML
      */
-    AmendManager.prototype.initHtml = function(data) {
-      
+    AmendManager.prototype.initHtml = function(elem, data) {
       var self = this;
       
+      // Build amendments container
+      var $container = $('<div>', {
+        'class': 'jqa-container'
+      }).hide();
+
+      $(elem)
+        .after($container)
+        .on('jqa-toggle', function() {
+          $container.slideToggle();
+        })
+        .on('jqa-render', function(event, dom) {
+          $container.append(dom);
+          // Alert listeners
+          self.notify('jqa-counter', [$container.children().length]);
+        });
+
       // Add amendments to original text
-      
-      $('*[' + this.attrname + ']', this.target).each(function() {
-        
-        var ref = $(this).attr(self.attrname);
-        
-        if (data[ref] !== undefined) {
-          self.renderAmendments(this, data[ref]);
-        }
-      });
+      var ref = $(elem).attr(this.attrname);
+      if (data[ref] !== undefined) {
+        this.renderAmendments(elem, data[ref]);
+      }
     };
     
     /**
@@ -146,40 +140,7 @@
       
       var $node = $(node),
           original = $node.text(),
-          $container = $node.next(),
-          $counter = $('.show-amendments', $container),
-          $div = $('.amendments', $container),
           $ul;
-          
-      if (!$container.hasClass('amendments-container')) {
-        // Build actions container
-        $container = $('<div>', {
-          'class': 'amendments-container'
-        });
-        
-        // Build link
-        $counter = $('<a>', {
-          'href': '#',
-          'class': 'show-amendments closed'
-        });
-        
-        // Build amendments list
-        $div = $('<div>', {
-          'class': 'amendments'
-        }).hide();
-        
-        // Manage events
-        $counter.click(function(event) {
-          $(this).toggleClass('opened').toggleClass('closed');
-          $($div).slideToggle();
-          // Avoid follow            
-          event.preventDefault();
-          return false;
-        });
-        
-        // Add new elements
-        $node.after($container.append($counter).append($div));
-      }
       
       // Render amendments
 
@@ -210,57 +171,27 @@
         })).append($('<li>', {
           'class': 'amendment-status ' + list[i]['status'],
           'html': this.statuses[list[i]['status']]
-        }));
-        
-        $div.append($ul);
+        }));        
       }
       
-      // Update counter
-      var count = $div.children().length;
-      $counter.html(count + ' ' + 
-        (count === 1 ? this.t('amendment') : this.t('amendments')));
+      // Alert listeners
+      $node.trigger('jqa-render', [$ul]);
     };
     
     /**
      * Initialize events
      */
-    AmendManager.prototype.initEvents = function() {
-      var self = this;
-      
-      $('*[' + this.attrname + ']', this.target).each(function() {
-        
-        var node = this,
-            original = node.innerHTML;
-        
-        // Add new text
-        if ($(node).is(':header[id]')) {
-          $(node)
-            .empty()
-            .append($('<span>', {
-              'class': 'original-text',
-              'html': original
-            }))
-            .append($('<a>', {
-              'href': '#',
-              'class': 'add-new-text',
-              'html': self.t('+', node.nodeName)
-            }).click(function(event) {
-              self.renderForm(node, true);
-              // Avoid follow
-              event.preventDefault();
-              return false;
-            }));
-        } else {
-          $(node).addClass('original-text');
-        }
-        
-        // Add amendment
-        $(node).click(function(event) {
-            self.renderForm(node, false);
-            // Avoid follow
-            event.preventDefault();
-            return false;
-        });
+    AmendManager.prototype.initEvents = function(elem) {
+      var self = this,
+          isHeading = $(elem).is(':header');
+          
+      $(elem).on(isHeading ? 'jqa-new' : 'click', function(event) {
+        self.renderForm(elem, isHeading);
+        // Alert listeners
+        self.notify('jqa-ready', [isHeading]);
+        // Avoid follow
+        event.preventDefault();
+        return false;
       });
     };
     
@@ -300,6 +231,8 @@
           // Build confirmation form
           self.renderConfirmationForm(node, extra, $amendForm);
         }
+        // Alert listeners
+        self.notify('jqa-submit');
         // Avoid submit
         event.preventDefault();
         return false;
@@ -342,6 +275,8 @@
         // Reset
         $amendForm.remove();
         $node.show();
+        // Alert listeners
+        self.notify('jqa-cancel');
         // Avoid submit
         event.preventDefault();
         return false;
@@ -409,12 +344,15 @@
         data['reference'] = $node.attr(self.attrname);
         data['extra'] = extra;
         data['status'] = 'pending';
-        self.api.create(data, function() {
+        // Alert listeners
+        self.notify('jqa-confirm', [data, function(success) {
           // Reset
           close();
           // Add amendment
-          self.renderAmendments(node, [data]);
-        });
+          if (success) {
+            self.renderAmendments(node, [data]);            
+          }
+        }]);
         // Avoid submit
         event.preventDefault();
         return false;
@@ -433,6 +371,8 @@
       $('.amend-cancel', $confirmForm).click(function(event) {
         // Reset
         close();
+        // Alert listeners
+        self.notify('jqa-cancel');
         // Avoid submit
         event.preventDefault();
         return false;
@@ -478,22 +418,12 @@
     };
     
     /**
-     * Render index
+     * Notify listeners
      */
-    AmendManager.prototype.renderIndex = function(selector) {
-      var self = this;
-      
-      $(selector).append(
-        $(':header[id]', this.target)
-          .clone()
-          .each(function() {
-            $(this).html(
-              '<a href="#' + this.id + '">' + this.innerHTML + '</a>'
-            )
-            .removeAttr('id')
-            .removeAttr(self.attrname);
-          })
-      );
+    AmendManager.prototype.notify = function(type, data) {
+      for (var i in this.listeners) {
+        $(this.listeners[i]).trigger(type, data);
+      }
     };
     
     return AmendManager;
@@ -509,6 +439,7 @@
       } else if (console) {
         console.log('Amendments system already initialized on this node!', this);
       }
+      return $.data(this, "amend");
     });
   };
 
