@@ -420,6 +420,13 @@
     };
     
     /**
+     * Add listeners
+     */
+    AmendManager.prototype.addListener = function(listener) {
+      this.listeners.push(listener);
+    };
+
+    /**
      * Notify listeners
      */
     AmendManager.prototype.notify = function(type, data) {
@@ -434,15 +441,12 @@
 
 
   $.fn["amend"] = function (options, data) {
-    return this.each(function() {
-      // Do something to each element here.
-      if (!$.data(this, "amend")) {
-        $.data(this, "amend", new AmendManager(this, options, data));
-      } else if (console) {
-        console.log('Amendments system already initialized on this node!', this);
-      }
-      return $.data(this, "amend");
-    });
+    if (!$(this).data("amend")) {
+      $(this).data("amend", new AmendManager(this, options, data));
+    } else if (console) {
+      console.log('Amendments system already initialized on this node!', this);
+    }
+    return $(this).data("amend");
   };
 
 }(window,document,jQuery));

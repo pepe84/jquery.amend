@@ -137,25 +137,9 @@
         // Initalize amendments plugin
         $(this).amend({
             listeners: [
-                $fake,
                 $link
-            ],
-            t: function(text, tag) {
-                if (!tag) {
-                    tag = 'p';
-                }
-                switch (tag.toLowerCase()) {
-                    case 'h1':
-                        return 'Add new section';
-                    case 'h2':
-                        return 'Add new article';
-                    case 'h3':
-                        return 'Add new point';
-                    default:
-                        return text;
-                }
-            }
-          }, [
+            ]
+        }, [
             {
               "id":"1", 
               "reference": "1.1",
@@ -199,9 +183,12 @@
             }
         ]);
         
+        // Test addListener method
+        $(this).amend().addListener($fake);
+        
         // Amend text event
         $(this).after($link);
-        
+               
         // Add new text event        
         if ($(this).is(':header[id]')) {
             var original = this.innerHTML;
