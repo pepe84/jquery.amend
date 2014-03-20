@@ -410,10 +410,12 @@
      * Get original text
      */
     AmendManager.prototype.getOriginalText = function(node) {
-      var text = node.innerHTML;
-      $('span', node).each(function(){
-        text = this.innerHTML;
-      });      
+      // Default behaviour
+      var text = $(node).text();
+      // Custom structure case
+      $('.jqa-text', node).each(function(){
+        text = $(this).text();
+      });
       return text;
     };
     
