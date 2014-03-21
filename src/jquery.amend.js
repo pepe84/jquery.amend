@@ -46,6 +46,7 @@
       'label':    'amend-label',
       'input':    'amend-input',
       'textarea': 'amend-textarea',
+      'preview':  'amend-textarea',
       'button':   {
         'default':  'amend-button',
         'submit':   'amend-submit',
@@ -219,7 +220,7 @@
       // Build new form
       $submitBtn = $('<button>', {
         'name': 'submit',
-        'html': this.t('Confirm'),
+        'html': this.t('Send'),
         'type': 'submit',
         'class': this.style.button.default + ' ' + this.style.button.submit
       });
@@ -331,7 +332,7 @@
       })).append($('<div>', {
         'html': extra ? data['amendment'] 
                 : this.renderTextDiff(original, data['amendment']),
-        'class': this.style.textarea
+        'class': this.style.preview
       })).append($('<label>', {
         'for': 'reason',
         'html': this.t('Reason'),
