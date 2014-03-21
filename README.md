@@ -17,6 +17,7 @@ $(selector).amend(options, data);
 
 ###options###
 * __attrname__ (optional): html attribute containing text id ("data-reference" by default)
+* __auto__ (optional): show amend form when user clicks on text (false by default)
 * __container__ (optional): custom amendments container (optional)
 * __listeners__: collection of listeners (see _Events_ section)
 * __statuses__ (optional): custom amendment status map (see default opts)
@@ -41,7 +42,7 @@ A list of amendments, each amendment should contain:
 * __jqa-toggle__: listens to expand/collapse amendments trigger
 * __jqa-render__: listens to render amendments trigger
 * __jqa-counter__: triggered when amendments counter is updated
-* __jqa-new__: listens to add new text trigger
+* __jqa-new__: listens to add amendment / new text trigger
 * __jqa-ready__: triggered when amend / new text form is rendered
 * __jqa-submit__: triggered when data form is submitted
 * __jqa-cancel__: triggered when any form is canceled

@@ -7,6 +7,7 @@
  * Plugin configuration requires the following properties to work properly:
  * 
  * - attrname: html attribute containing text id ("data-reference" by default)
+ * - auto: show amend form when user clicks on text (false by default)
  * - container: custom amendments container (optional)
  * - listeners: collection of listeners
  * - statuses: custom amendment status map (see default opts)
@@ -37,6 +38,7 @@
 
   defaultOpts = {
     'attrname': 'data-reference',
+    'auto': false,
     'container': null,
     'listeners': [],
     'style': {
@@ -192,12 +194,13 @@
      */
     AmendManager.prototype.initEvents = function(elem) {
       var self = this,
-          isHeading = $(elem).is(':header');
+          isH = $(elem).is(':header'),
+          events = 'jqa-new' + (!isH && this.auto ? ' click' : '');
           
-      $(elem).on(isHeading ? 'jqa-new' : 'click', function(event) {
-        self.renderForm(elem, isHeading);
+      $(elem).on(events, function(event) {
+        self.renderForm(elem, isH);
         // Alert listeners
-        self.notify('jqa-ready', [isHeading]);
+        self.notify('jqa-ready', [isH]);
         // Avoid follow
         event.preventDefault();
         return false;
