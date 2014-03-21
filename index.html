@@ -113,32 +113,67 @@
         alert('Success creating amendment at ' + data['reference']);
         callback(true);
     }).hide();
+    
     $('body').after($fake);
     
     $('.law *').each(function(){        
         
-        var elem = this;
+        var elem = this,
+            listeners = [
+                $fake
+            ];
+        
+        // Add new text event        
+        if ($(this).is(':header[id]')) {
+            // Build link
+            var original = this.innerHTML,
+                $addLink = $('<a>', {
+                    'href': '#',
+                    'class': 'add-new-text closed',
+                    'html': '+'
+                }).click(function(event){
+                    if ($(this).is('.closed')) {
+                        $(this).toggleClass('opened').toggleClass('closed');
+                        $(elem).trigger('jqa-new');
+                    }
+                    // Avoid follow            
+                    event.preventDefault();
+                    return false;
+                }).on('jqa-cancel jqa-confirm', function(){
+                    $(this).toggleClass('opened').toggleClass('closed');
+                });
+                listeners.push($addLink);
+            // Change headig structure
+            $(this)
+                .empty()
+                .append($('<span>', {
+                    'class': 'jqa-text',
+                    'html': original
+                }))
+                .append($addLink);
+        } else {
+            $(this).addClass('jqa-text');
+        }
         
         // Expand/collapse amendments link
-        var $link = $('<a>', {
+        var $showLink = $('<a>', {
             'href': '#',
             'class': 'show-amendments closed',
             'html': '0 amendments'
-        }).on('jqa-counter', function(event, count){
-            $(this).html(count + ' amendment' + (count === 1 ? '' : 's'));
         }).click(function(event){
             $(this).toggleClass('opened').toggleClass('closed');
             $(elem).trigger('jqa-toggle');
             // Avoid follow            
             event.preventDefault();
             return false;
+        }).on('jqa-counter', function(event, count){
+            $(this).html(count + ' amendment' + (count === 1 ? '' : 's'));
         });
+        listeners.push($showLink);
         
         // Initalize amendments plugin
-        $(this).amend({
-            listeners: [
-                $link
-            ]
+        $(elem).amend({
+            listeners: listeners
         }, [
             {
               "id":"1", 
@@ -183,34 +218,8 @@
             }
         ]);
         
-        // Test addListener method
-        $(this).amend().addListener($fake);
-        
-        // Amend text event
-        $(this).after($link);
-               
-        // Add new text event        
-        if ($(this).is(':header[id]')) {
-            var original = this.innerHTML;
-            $(this)
-                .empty()
-                .append($('<span>', {
-                    'class': 'jqa-text',
-                    'html': original
-                }))
-                .append($('<a>', {
-                    'href': '#',
-                    'class': 'add-new-text',
-                    'html': '+'
-                }).click(function(event){
-                    $(elem).trigger('jqa-new');
-                    // Avoid follow            
-                    event.preventDefault();
-                    return false;
-                }));
-        } else {
-            $(this).addClass('jqa-text');
-        }
+        // Render after amend plugin execution (due to DOM changes)
+        $(elem).after($showLink);
     });
     </script>
   </body>

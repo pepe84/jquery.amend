@@ -1,9 +1,9 @@
 /* Original text */
 
-.original-text {
+.jqa-text {
     border: 1px solid transparent;
 }
-p.original-text:hover {
+p.jqa-text:hover {
     border: 1px dashed #999;
     background: #F7F08B;
     cursor: text;
