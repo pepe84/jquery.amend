@@ -17,10 +17,11 @@ $(selector).amend(options, data);
 
 ###options###
 * __attrname__ (optional): html attribute containing text id ("data-reference" by default)
+* __container__ (optional): custom amendments container (optional)
 * __listeners__: collection of listeners (see _Events_ section)
 * __statuses__ (optional): custom amendment status map (see default opts)
 * __style__ (optional): custom class names for form elements (see default opts)
-* __t__ (optional): function(text) to translate statuses and other stuff (returns same text by default)
+* __t__ (optional): translate function with text as 1st argument and tag as 2nd (optional)
 
 ###data###
 

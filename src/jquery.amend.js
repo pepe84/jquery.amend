@@ -7,10 +7,11 @@
  * Plugin configuration requires the following properties to work properly:
  * 
  * - attrname: html attribute containing text id ("data-reference" by default)
+ * - container: custom amendments container (optional)
  * - listeners: collection of listeners
  * - statuses: custom amendment status map (see default opts)
  * - style: custom class names for form elements (see default opts)
- * - t: function(text) to translate statuses and other stuff (returns same text by default)
+ * - t: translate function with text as 1st argument and tag as 2nd (optional)
  * 
  * Amendments should have this data structure:
  *
@@ -36,6 +37,7 @@
 
   defaultOpts = {
     'attrname': 'data-reference',
+    'container': null,
     'listeners': [],
     'style': {
       'form':     'amend-form',
@@ -104,15 +106,22 @@
      * Initialize HTML
      */
     AmendManager.prototype.initHtml = function(elem, data) {
-      var self = this;
+      var self = this,
+          $container;
       
-      // Build amendments container
-      var $container = $('<div>', {
-        'class': 'jqa-container'
-      }).hide();
-
+      if (this.container) {
+        // Use custom container
+        $container = $(this.container);
+      } else {
+        // Build container
+        $container = $('<div>', {
+          'class': 'jqa-container'
+        }).hide();
+        // Add to DOM
+        $(elem).after($container);
+      }
+      
       $(elem)
-        .after($container)
         .on('jqa-toggle', function() {
           $container.slideToggle();
         })
@@ -121,7 +130,7 @@
           // Alert listeners
           self.notify('jqa-counter', [$container.children().length]);
         });
-
+        
       // Add amendments to original text
       var ref = $(elem).attr(this.attrname);
       if (data[ref] !== undefined) {
