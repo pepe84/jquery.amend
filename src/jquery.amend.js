@@ -213,27 +213,30 @@
     AmendManager.prototype.renderForm = function(node, extra) {
       // Get previous data
       var $node = $(node),
-          original = this.getOriginalText(node);
+          original = this.getOriginalText(node),
+          $submitBtn, $cancelBtn, $amendForm;
       
       // Build new form
-      var $amendForm = $('<form>', {
+      $submitBtn = $('<button>', {
+        'name': 'submit',
+        'html': this.t('Confirm'),
+        'type': 'submit',
+        'class': this.style.button.default + ' ' + this.style.button.submit
+      });
+      $cancelBtn = $('<button>', {
+        'name': 'cancel',
+        'html': this.t('Cancel'),
+        'type': 'button',
+        'class': this.style.button.default + ' ' + this.style.button.cancel
+      });
+      $amendForm = $('<form>', {
         'action': '#',
         'class': this.style.form
       }).append($('<textarea>', {
         'name': 'amendment',
         'class': this.style.textarea
-      })).append($('<button>', {
-        'name': 'submit',
-        'html': this.t('Send'),
-        'type': 'submit',
-        'class': this.style.button.default + ' ' + this.style.button.submit
-      })).append($('<button>', {
-        'name': 'cancel',
-        'html': this.t('Cancel'),
-        'type': 'button',
-        'class': this.style.button.default + ' ' + this.style.button.cancel
-      }));
- 
+      })).append($submitBtn).append($cancelBtn);
+      
       // Form submit
       var self = this;
       
@@ -280,10 +283,10 @@
       
       // Submit event
       $amendForm.submit(submit);
-      $('.amend-submit', $amendForm).click(submit);
+      $submitBtn.click(submit);
       
       // Cancel event
-      $('.amend-cancel', $amendForm).click(function(event) {
+      $cancelBtn.click(function(event) {
         // Reset
         $amendForm.remove();
         $node.show();
@@ -302,10 +305,23 @@
       // Get previous data
       var $node = $(node),
           original = this.getOriginalText(node),
-          data = this.getFormData($oldForm);
+          data = this.getFormData($oldForm),
+          $submitBtn, $cancelBtn, $confirmForm;
       
       // Build new form
-      var $confirmForm = $('<form>', {
+      $submitBtn = $('<button>', {
+        'name': 'submit',
+        'html': this.t('Confirm'),
+        'type': 'submit',
+        'class': this.style.button.default + ' ' + this.style.button.submit
+      });
+      $cancelBtn = $('<button>', {
+        'name': 'cancel',
+        'html': this.t('Cancel'),
+        'type': 'button',
+        'class': this.style.button.default + ' ' + this.style.button.cancel
+      });
+      $confirmForm = $('<form>', {
         'action': '#',
         'class': this.style.form
       }).append($('<label>', {
@@ -331,17 +347,7 @@
         'name': 'author',
         'type': 'text',
         'class': this.style.input
-      })).append($('<button>', {
-        'name': 'submit',
-        'html': this.t('Confirm'),
-        'type': 'submit',
-        'class': this.style.button.default + ' ' + this.style.button.submit
-      })).append($('<button>', {
-        'name': 'cancel',
-        'html': this.t('Cancel'),
-        'type': 'button',
-        'class': this.style.button.default + ' ' + this.style.button.cancel
-      }));
+      })).append($submitBtn).append($cancelBtn);
       
       // Render new form
       $oldForm.before($confirmForm).remove();
@@ -377,10 +383,10 @@
       
       // Submit event
       $confirmForm.submit(submit);
-      $('.amend-submit', $confirmForm).click(submit);
+      $submitBtn.click(submit);
       
       // Cancel event
-      $('.amend-cancel', $confirmForm).click(function(event) {
+      $cancelBtn.click(function(event) {
         // Reset
         close();
         // Alert listeners
