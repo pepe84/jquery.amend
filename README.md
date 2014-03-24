@@ -59,6 +59,7 @@ A list of amendments, each amendment should contain:
 
 ##Available translations##
 
+* "Add new text inside"
 * "Send"
 * "Cancel"
 * "Delete text"
