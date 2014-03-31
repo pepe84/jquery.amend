@@ -370,8 +370,8 @@
         $.extend(data, self.getFormData($confirmForm));
         data[self.fields['reference']] = $node.attr(self.attrname);
         data[self.fields['extra']] = extra;
-        // Alert listeners (data + successCallback)
-        self.notify('jqa-confirm', [data, function() {
+        // Alert listeners (form + data + successCallback)
+        self.notify('jqa-confirm', [$confirmForm, data, function() {
           // Reset
           close();
           // Add amendment

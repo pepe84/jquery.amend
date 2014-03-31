@@ -54,6 +54,10 @@
             float: right;
             font-size: 0.7em;
         }
+        .info {
+            padding: 10px;
+            background: #90F5FC;
+        }
     </style>
   </head>
   <body>
@@ -109,8 +113,15 @@
     // Initalize listener
     var $fake = $('<div>', {
         'id': 'fake'
-    }).on('jqa-confirm', function(event, data, callback) {
-        alert('Success creating amendment at ' + data['reference']);
+    }).on('jqa-confirm', function(event, $form, data, callback) {
+        // Alert user
+        var $msg = $('<div>', {
+            html: 'Success creating amendment at ' + data['reference'],
+            class: 'info'
+        });
+        $form.after($msg);
+        $msg.fadeOut(4000);
+        // Call success callback
         callback(true);
     }).hide();
     
