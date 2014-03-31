@@ -19,6 +19,7 @@ $(selector).amend(options, data);
 * __attrname__ (optional): html attribute containing text id ("data-reference" by default)
 * __auto__ (optional): show amend form when user clicks on text (false by default)
 * __container__ (optional): custom amendments container (optional)
+* __fields__: custom amendment fields map ~ data structure (see default opts)
 * __listeners__: collection of listeners (see _Events_ section)
 * __statuses__ (optional): custom amendment status map (see default opts)
 * __style__ (optional): custom class names for form elements (see default opts)
