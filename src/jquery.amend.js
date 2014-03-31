@@ -377,6 +377,8 @@
           close();
           // Add amendment
           self.renderAmendments(node, [data]);
+          // Alert listener
+          self.notify('jqa-success');
         }]);
         // Avoid submit
         event.preventDefault();

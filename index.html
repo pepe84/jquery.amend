@@ -139,7 +139,7 @@
                     // Avoid follow            
                     event.preventDefault();
                     return false;
-                }).on('jqa-cancel jqa-confirm', function(){
+                }).on('jqa-success jqa-cancel', function(){
                     $(this).toggleClass('opened').toggleClass('closed');
                 });
                 listeners.push($addLink);

@@ -46,7 +46,8 @@ A list of amendments, each amendment should contain:
 * __jqa-ready__: triggered when amend / new text form is rendered
 * __jqa-submit__: triggered when data form is submitted
 * __jqa-cancel__: triggered when any form is canceled
-* __jqa-confim__: triggered when confirm form is submitted
+* __jqa-confirm__: triggered when confirm form is submitted
+* __jqa-success__: triggered when success callback ends
 
 ***
 
