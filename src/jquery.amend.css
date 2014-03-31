@@ -67,13 +67,13 @@ p.jqa-text:hover {
         float: right;
         font-weight: bold;
     }
-    .amendment-status.pending {
+    .amendment-status-pending {
         color: #D69302;
     }
-    .amendment-status.approved {
+    .amendment-status-approved {
         color: #279100;
     }
-    .amendment-status.rejected {
+    .amendment-status-rejected {
         color: #C9002F;
     }
     
