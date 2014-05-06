@@ -53,15 +53,15 @@ p.jqa-text:hover {
         .amendment-status {
             font-weight: bold;
         }
-    .amendment-author,
+    .amendment-creation,
     .amendment-status {
         margin: 8px 0 0 0
     }
-    .amendment-author {
+    .amendment-creation {
         float: left;
     }
-        .amendment-author span {
-            font-weight: normal;
+        .amendment-date {
+            font-style: italic;
         }
     .amendment-status {
         float: right;
