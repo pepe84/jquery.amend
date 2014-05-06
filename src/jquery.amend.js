@@ -131,6 +131,7 @@
         .on('jqa-render', function(event, dom) {
           $container.append(dom);
           // Alert listeners
+          self.notify('jqa-rendered', [dom]);
           self.notify('jqa-counter', [$container.children().length]);
         });
         
