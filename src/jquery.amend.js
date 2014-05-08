@@ -33,6 +33,7 @@
     'auto': false,
     'container': null,
     'fields': {
+      'id': 'id',               // amendment unique id
       'reference': 'reference', // original text id
       'amendment': 'amendment', // modified or new text
       'extra': 'extra',         // new text flag
@@ -167,7 +168,7 @@
           'html': list[i][this.fields['extra']] 
             ? '<span class="plus">[+]</span> ' + list[i][this.fields['amendment']] 
             : this.renderTextDiff(original, list[i][this.fields['amendment']] ? list[i][this.fields['amendment']] : '')
-        }));
+        })).data('json', list[i]);
         
         if (!this.isEmpty(list[i][this.fields['reason']])) {
           $ul.append($('<li>', {
