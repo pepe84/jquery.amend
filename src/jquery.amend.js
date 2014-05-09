@@ -50,10 +50,10 @@
       'textarea': 'amend-textarea',
       'preview':  'amend-textarea',
       'button':   {
-        'default':  'amend-button',
-        'submit':   'amend-submit',
-        'cancel':   'amend-cancel',
-        'delete':   'amend-delete'
+        'standard':  'amend-button',
+        'submit':    'amend-submit',
+        'cancel':    'amend-cancel',
+        'remove':    'amend-delete'
       }
     },
     statuses: {
@@ -93,7 +93,7 @@
       
       // Preprocess data
       var data = {};
-      for (var i in json) {
+      for (i in json) {
         // Initialize list
         if (!data[json[i][this.fields['reference']]]) {
           data[json[i][this.fields['reference']]] = [];
@@ -126,16 +126,14 @@
         $(elem).after($container);
       }
       
-      $(elem)
-        .on('jqa-toggle', function() {
-          $container.slideToggle();
-        })
-        .on('jqa-render', function(event, dom) {
-          $container.append(dom);
-          // Alert listeners
-          self.notify('jqa-rendered', [dom]);
-          self.notify('jqa-counter', [$container.children().length]);
-        });
+      $(elem).on('jqa-toggle', function() {
+        $container.slideToggle();
+      }).on('jqa-render', function(event, dom) {
+        $container.append(dom);
+        // Alert listeners
+        self.notify('jqa-rendered', [dom]);
+        self.notify('jqa-counter', [$container.children().length]);
+      });
         
       // Add amendments to original text
       var ref = $(elem).attr(this.attrname);
@@ -236,13 +234,13 @@
         'name': 'submit',
         'html': this.t('Send'),
         'type': 'submit',
-        'class': this.style.button.default + ' ' + this.style.button.submit
+        'class': this.style.button.standard + ' ' + this.style.button.submit
       });
       $cancelBtn = $('<button>', {
         'name': 'cancel',
         'html': this.t('Cancel'),
         'type': 'button',
-        'class': this.style.button.default + ' ' + this.style.button.cancel
+        'class': this.style.button.standard + ' ' + this.style.button.cancel
       });
       $amendForm = $('<form>', {
         'action': '#',
@@ -286,7 +284,7 @@
           'name': 'delete',
           'html': this.t('Delete text'),
           'type': 'button',
-          'class': this.style.button.default + ' ' + this.style.button.delete
+          'class': this.style.button.standard + ' ' + this.style.button.remove
         }).click(function(event) {
           // Delete event
           $('textarea', $amendForm).val("");
@@ -328,13 +326,13 @@
         'name': 'submit',
         'html': this.t('Confirm'),
         'type': 'submit',
-        'class': this.style.button.default + ' ' + this.style.button.submit
+        'class': this.style.button.standard + ' ' + this.style.button.submit
       });
       $cancelBtn = $('<button>', {
         'name': 'cancel',
         'html': this.t('Cancel'),
         'type': 'button',
-        'class': this.style.button.default + ' ' + this.style.button.cancel
+        'class': this.style.button.standard + ' ' + this.style.button.cancel
       });
       $confirmForm = $('<form>', {
         'action': '#',
